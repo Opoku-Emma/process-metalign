@@ -6,14 +6,14 @@ import pandas as pd
 import numpy as np
 import sqlite3
 
-import fill_tables
-import create_tables
-import make_rows
-from assign_lineage_codes import assign_code
-import queries
-import generate_plots
-from my_decorators import my_timer
-from diversity_stats import statistics, make_plot
+import src.fill_tables
+import src.create_tables
+import src.make_rows
+from src.assign_lineage_codes import assign_code
+import src.queries
+import src.generate_plots
+from src.my_decorators import my_timer
+from src.diversity_stats import statistics, make_plot
 
 # This is required for sqlite to properly interpret numpy integers
 sqlite3.register_adapter(np.int64, lambda x: int(x))
