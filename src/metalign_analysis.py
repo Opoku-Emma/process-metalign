@@ -20,7 +20,7 @@ sqlite3.register_adapter(np.int32, lambda x: int(x))
 
 # Set up configuration for logging errors and other information during runtime
 logging.basicConfig(
-    filename=f'metalign.log',
+    filename=f'log/metalign.log',
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     filemode="w",
@@ -39,7 +39,7 @@ class MetalignDB:
         """
         # Ensure compatibility across multiple OS
         self.file_path = pathlib.Path(file_path)
-        self.database_path = "../data"
+        self.database_path = "data"
 
         # Make a directory to store database
         if not os.path.exists(self.database_path):
