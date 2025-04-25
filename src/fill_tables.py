@@ -1,18 +1,3 @@
-"""
-This module contains functions that generate SQL INSERT statements for populating
-various taxonomic tables in a database. Each function corresponds to a specific
-taxonomic rank and returns a parameterized SQL query string.
-
-Functions:
----
-    fill_species(): Generates an SQL query string to insert data into the tSpecies table.
-    fill_genus(): Generates an SQL query string to insert data into the tGenus table.
-    fill_family(): Generates an SQL query string to insert data into the tFamily table.
-    fill_order(): Generates an SQL query string to insert data into the tOrder table.
-    fill_class(): Generates an SQL query string to insert data into the tClass table.
-    fill_phylum(): Generates an SQL query string to insert data into the tPhylum table.
-"""
-
 def fill_species() -> str:
     """
     Generates an SQL query string to insert data into the tSpecies table.

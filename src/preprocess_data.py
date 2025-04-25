@@ -1,7 +1,3 @@
-"""
-Module for extracting taxonomic information from lineage and taxa strings.
-"""
-
 
 RANK_POS = {
         "KINGDOM_POS": 0,

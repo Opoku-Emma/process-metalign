@@ -1,5 +1,5 @@
 import re 
-import preprocess_data
+import src.preprocess_data as preprocess_data
 
 
 def get_sample_name(sample_id: str) -> str:

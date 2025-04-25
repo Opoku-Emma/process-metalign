@@ -6,12 +6,11 @@ import pandas as pd
 import numpy as np
 import sqlite3
 
-import src.fill_tables
-import src.create_tables
-import src.make_rows
+from src import fill_tables
+from src import create_tables
+from src import make_rows
 from src.assign_lineage_codes import assign_code
-import src.queries
-import src.generate_plots
+from src import queries
 from src.my_decorators import my_timer
 from src.diversity_stats import statistics, make_plot
 
@@ -560,7 +559,7 @@ class MetalignDB:
         if level not in self._GET_DATA: raise ValueError (f"Level not supported: {level}")
         _func = self._GET_DATA[level]
         df = pd.DataFrame(_func(sample_id)[:subset])
-        fig = generate_plots.make_barplot(df,sample_id,level)
+        fig = make_plot.make_barplot(df,sample_id,level)
         return
 
     def _preprocess_for_barplot(self, 

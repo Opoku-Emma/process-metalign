@@ -174,8 +174,13 @@ def get_all_phyla(sample_id: str = None) -> str:
     if not sample_id:
         sample_id = ''
     sql = f"""
-    SELECT phylum_name, phylum_id, superkingdom_id, sample_id, relative_abundance
-    from vPhylum
+    SELECT 
+        phylum_name, 
+        phylum_id, 
+        superkingdom_id, 
+        sample_id, 
+        relative_abundance
+    FROM vPhylum
     WHERE sample_id LIKE '{sample_id}%'
     ;"""
     return sql
@@ -193,7 +198,11 @@ def get_all_class(sample_id: str = None) -> str:
         sample_id = ""
     
     sql = f"""
-    SELECT class_name, class_id, sample_id, relative_abundance
+    SELECT 
+        class_name, 
+        class_id, 
+        sample_id, 
+        relative_abundance
     FROM vClass
     WHERE sample_id LIKE '{sample_id}%'
     ;"""
@@ -212,7 +221,11 @@ def get_all_order(sample_id: str = None) -> str:
         sample_id = ""
     
     sql = f"""
-    SELECT order_name, order_id, sample_id, relative_abundance
+    SELECT 
+        order_name, 
+        order_id, 
+        sample_id, 
+        relative_abundance
     FROM vOrder
     WHERE sample_id LIKE '{sample_id}%'
     ;"""
@@ -230,7 +243,11 @@ def get_all_family(sample_id: str = None) -> str:
         sample_id = ""
     
     sql = f"""
-    SELECT family_name, family_id, sample_id, relative_abundance
+    SELECT 
+        family_name, 
+        family_id, 
+        sample_id, 
+        relative_abundance
     FROM vFamily
     WHERE sample_id LIKE '{sample_id}%'
     ;"""
@@ -247,7 +264,11 @@ def get_all_genus(sample_id: str = None) -> str:
     if not sample_id:
         sample_id = ""
     sql = f"""
-    SELECT genus_name, genus_id, sample_id, relative_abundance
+    SELECT 
+        genus_name, 
+        genus_id, 
+        sample_id, 
+        relative_abundance
     FROM vGenus
     WHERE sample_id LIKE '{sample_id}%'
     ;"""
