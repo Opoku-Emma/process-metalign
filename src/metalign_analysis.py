@@ -519,19 +519,6 @@ class MetalignDB:
         self._dimensions.to_csv(file_path, index=True, sep=sep, index_label="Well")
         return
 
-    def plot_UMAP(self,
-                  dissimilarity_matrix: True = None,
-                  color_by: str = None
-                  ) -> None:
-
-        dissimilarity_matrix=self.get_beta_diversity().to_data_frame()
-
-        make_UMAP = statistics.make_UMAP(dissimilarity_matrix = dissimilarity_matrix,
-                                        abundance_matrix = self._abundance_matrix,
-                                        metadata=self._metadata,
-                                        color_by=color_by)
-
-        return make_UMAP
 
     def plot_tSNE(
         self,
