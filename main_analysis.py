@@ -1,13 +1,11 @@
 from src.metalign_analysis import MetalignDB as DB
 
 def main():
-    rurutu_soil = "data/all_samples_nostrain.tsv"
-    db = DB(rurutu_soil)
-    metadata_file = "data/RurutuSoilNewTemplate(1).txt"
-    db.get_metadata(metadata_file, categories=['Well', 'Sample Name','complex', 'cultivation'], index_col='Well')
-    # alpha_diversity = db.get_alpha_diversity()
-    # print(f"Alpha diversity for all samples: \n{list(alpha_diversity)}")
-    db.plot_pcoa('complex')
+    raw_data = "data/Leaf_all.nostrain.txt"
+    db = DB(raw_data)
+    metadata_file = "data/leaf_phenotype.csv"
+    db.get_metadata(metadata_file, categories=['samples', 'site', 'treatment_herb_level'], sep=',', index_col='samples')
+    db.plot_pcoa(color_by="site", method='eigh')  
     return
 
 if __name__ == "__main__":
