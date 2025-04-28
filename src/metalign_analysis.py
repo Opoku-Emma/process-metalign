@@ -39,7 +39,7 @@ class MetalignDB:
         """
         # Ensure compatibility across multiple OS
         self.file_path = pathlib.Path(file_path)
-        self.database_path = "data"
+        self.database_path = pathlib.Path("data/")
 
         # Make a directory to store database
         if not os.path.exists(self.database_path):
@@ -49,7 +49,7 @@ class MetalignDB:
         file_basename = os.path.basename(self.file_path)[:-4]
 
         # Create connection to database. It will be created if it doesn't exist
-        self._sql_file_path = f"{self.database_path}/{file_basename}.sqlite"
+        self._sql_file_path = os.path.join(self.database_path, file_basename+'.sqlite')
         self._connect()
         self._close()
 
@@ -62,8 +62,8 @@ class MetalignDB:
             logger.info("Metalign txt file exists")
 
             # Check if columns in the file match what we want
-            with open(self.file_path) as first_line:
-                first_line = first_line.readline()
+            with open(self.file_path) as f:
+                first_line = f.readline()
             self._check_column_match(first_line)
 
             # If the file is compatible, then we create the tables
@@ -312,7 +312,6 @@ class MetalignDB:
             list: of all sample names
         """
         return self._all_samples
-
     def get_all_phyla(self, sample_id: str = None) -> pd.DataFrame:
         """
         Retrieves the dataset containing the relative abundance of all phyla
@@ -434,7 +433,9 @@ class MetalignDB:
         """
         Calculate the alpha diversity of each sample.
         Arguments:
-            metric (str): shannon, simpson, sobs, 
+            metric (str): shannon, simpson, sobs, dominance, chao1, ace, etc.
+                refer to `skbio.diversity._driver._get_apha_diversity_metric_map`
+                for more metrics 
         Returns:
             pd.Series: list containing diversity indices
         """
@@ -519,6 +520,13 @@ class MetalignDB:
         self._dimensions.to_csv(file_path, index=True, sep=sep, index_label="Well")
         return
 
+    def plot_UMAP(self,
+                  dissimilarity_matrix: True = None,
+                  color_by: str = None
+                  ) -> None:
+
+
+        return
 
     def plot_tSNE(
         self,
