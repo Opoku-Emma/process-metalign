@@ -506,6 +506,8 @@ class MetalignDB:
             plt.figure
         """
         speAbund_sobs = self.get_alpha_diversity("sobs")
+        
+        # make a dataframe of sample names and abundances associated with it
         sobs_df = (
             pd.DataFrame(speAbund_sobs, columns=["abundance"])
             .reset_index()

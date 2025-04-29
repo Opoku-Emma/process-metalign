@@ -94,12 +94,12 @@ def make_species_accumulation(sample_names: np.array,
                               label_y: bool = False,
                               label_x: bool = False,
                               marker: str = 'o'
-                              ) -> list:
+                              ) -> plt.figure:
     """
     Make species accumulation curve. It sorts the data in ascending order.
     Arguments:
         sample_names (np.Series): names of samples
-        species_richness (np.Series)
+        species_richness (np.Series): corresponding species richness
     Returns:
         list: A list of Line2D objects representing the plotted data.
     """
