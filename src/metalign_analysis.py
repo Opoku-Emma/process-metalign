@@ -6,11 +6,9 @@ import pandas as pd
 import numpy as np
 import sqlite3
 
-from src import fill_tables
-from src import create_tables
+from src import sql_tables
 from src import make_rows
 from src.assign_lineage_codes import assign_code
-from src import queries
 from src.my_decorators import my_timer
 from src.diversity_stats import statistics, make_plot
 
@@ -171,13 +169,13 @@ class MetalignDB:
             None
         """
         # Generate SQL create table statements
-        _phylum = create_tables.create_tPhylum()
-        _class = create_tables.create_tClass()
-        _order = create_tables.create_tOrder()
-        _family = create_tables.create_tFamily()
-        _genus = create_tables.create_tGenus()
-        _species = create_tables.create_tSpecies()
-        _species_abundance = create_tables.create_species_abundance()
+        _phylum = sql_tables.create_tPhylum()
+        _class = sql_tables.create_tClass()
+        _order = sql_tables.create_tOrder()
+        _family = sql_tables.create_tFamily()
+        _genus = sql_tables.create_tGenus()
+        _species = sql_tables.create_tSpecies()
+        _species_abundance = sql_tables.create_species_abundance()
 
         table_strings = [_phylum, _class, _order, _family, _genus, _species, _species_abundance]
         for table in table_strings:
@@ -226,13 +224,13 @@ class MetalignDB:
 
             row_info = make_rows.make_row_dict(lineage_id, lineage_name, sample_id)
             # Generate SQL INSERT statements
-            species_sql = fill_tables.fill_species()
-            genus_sql = fill_tables.fill_genus() 
-            family_sql = fill_tables.fill_family()
-            order_sql = fill_tables.fill_order()
-            class_sql = fill_tables.fill_class()
-            phylum_sql = fill_tables.fill_phylum()
-            species_abundance_sql = fill_tables.species_abundance_sql()
+            species_sql = sql_tables.fill_species()
+            genus_sql = sql_tables.fill_genus() 
+            family_sql = sql_tables.fill_family()
+            order_sql = sql_tables.fill_order()
+            class_sql = sql_tables.fill_class()
+            phylum_sql = sql_tables.fill_phylum()
+            species_abundance_sql = sql_tables.species_abundance_sql()
 
             species_rows_to_insert.append(row_info['species'])
             # Get data for the species abundance in each sample
@@ -266,11 +264,11 @@ class MetalignDB:
             None
         """
         self._connect()
-        self.run_action(queries.vPhylum, keep_open=True, commit=True)
-        self.run_action(queries.vClass, keep_open=True, commit=True)
-        self.run_action(queries.vOrder, keep_open=True, commit=True)
-        self.run_action(queries.vFamily, keep_open=True, commit=True)
-        self.run_action(queries.vGenus, commit=True)
+        self.run_action(sql_tables.vPhylum, keep_open=True, commit=True)
+        self.run_action(sql_tables.vClass, keep_open=True, commit=True)
+        self.run_action(sql_tables.vOrder, keep_open=True, commit=True)
+        self.run_action(sql_tables.vFamily, keep_open=True, commit=True)
+        self.run_action(sql_tables.vGenus, commit=True)
 
         return
 
@@ -323,7 +321,7 @@ class MetalignDB:
             pd.DataFrame: Dataframe with relative abundance of phyla present
         """
 
-        sql = queries.get_all_phyla(sample_id)
+        sql = sql_tables.get_all_phyla(sample_id)
         self._connect()
         all_phyla = pd.read_sql(sql, self._conn)
         return all_phyla
@@ -338,7 +336,7 @@ class MetalignDB:
         Returns:
             pd.DataFrame: Dataframe with relative abundance of classes present
         """
-        sql = queries.get_all_class(sample_id)
+        sql = sql_tables.get_all_class(sample_id)
         self._connect()
         all_classes = pd.read_sql(sql, self._conn)
         return all_classes
@@ -353,7 +351,7 @@ class MetalignDB:
         Returns:
             pd.DataFrame: Dataframe with relative abundance of orders present
         """
-        sql = queries.get_all_order(sample_id)
+        sql = sql_tables.get_all_order(sample_id)
         self._connect()
         all_orders = pd.read_sql(sql, self._conn)
         return all_orders
@@ -369,7 +367,7 @@ class MetalignDB:
             pd.DataFrame: Dataframe with relative abundance of family present
         """
 
-        sql = queries.get_all_family(sample_id)
+        sql = sql_tables.get_all_family(sample_id)
         self._connect()
         all_family = pd.read_sql(sql, self._conn)
         return all_family
@@ -384,7 +382,7 @@ class MetalignDB:
         Returns:
             pd.DataFrame: Dataframe with relative abundance of genera present
         """
-        sql = queries.get_all_genus(sample_id)
+        sql = sql_tables.get_all_genus(sample_id)
         self._connect()
         all_genus = pd.read_sql(sql, self._conn)
         return all_genus
@@ -405,7 +403,7 @@ class MetalignDB:
             pd.DataFrame: with relative abundance of species present
         """
 
-        sql = queries.get_all_species(name, sample_id)
+        sql = sql_tables.get_all_species(name, sample_id)
         self._connect()
         all_species = pd.read_sql(sql, self._conn)
         self._close()
@@ -525,8 +523,14 @@ class MetalignDB:
                   color_by: str = None
                   ) -> None:
 
+        dissimilarity_matrix=self.get_beta_diversity().to_data_frame()
 
-        return
+        make_UMAP = statistics.make_UMAP(dissimilarity_matrix = dissimilarity_matrix,
+                                        abundance_matrix = self._abundance_matrix,
+                                        metadata=self._metadata,
+                                        color_by=color_by)
+
+        return make_UMAP
 
     def plot_tSNE(
         self,
