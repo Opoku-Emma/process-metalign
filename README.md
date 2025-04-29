@@ -8,13 +8,14 @@ Given that you are new to [metalign](https://github.com/nlapier2/Metalign) and h
 contains necessary scripts to run analysis\
 -- src\
 -- assign_lineage_codes.py\
--- create_tables.py\
--- fill_tables.py
+-- my_decorators.py\
+-- preprocess_data.py\
+-- sql_tables.py\
 -- make_rows.py
 
 ### data/
 Contains demo data for analysis.
-- data/leaf_all.nostrain.txt
+- leaf_all.nostrain.txt
 - leaf_phenotype.txt
 
 ### main_analysis.py
