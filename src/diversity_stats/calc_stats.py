@@ -103,12 +103,13 @@ def make_species_accumulation(sample_names: np.array,
     Returns:
         list: A list of Line2D objects representing the plotted data.
     """
+    fig, ax = plt.subplots()
+    ax.plot(sample_names, species_richness, marker)
+    ax.set_xticklabels(sample_names, rotation=90)
     
-    fig = plt.plot(sample_names, species_richness, marker='o')
-    plt.xticks(rotation=90)
-    if label_y: plt.ylabel('Species Richness')
-    if label_x: plt.xlabel('Samples')
-    if grid is not None: plt.grid(True, axis=grid)
+    if label_y: ax.set_ylabel('Species Richness')
+    if label_x: ax.set_xlabel('Samples')
+    if grid is not None: ax.grid(True, axis=grid)
     
     return fig
 
