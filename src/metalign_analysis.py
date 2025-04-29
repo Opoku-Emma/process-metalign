@@ -6,11 +6,12 @@ import pandas as pd
 import numpy as np
 import sqlite3
 
+from src.diversity_stats import calc_stats
 from src import sql_tables
 from src import make_rows
 from src.assign_lineage_codes import assign_code
 from src.my_decorators import my_timer
-from src.diversity_stats import statistics, make_plot
+from src.diversity_stats import make_plot
 
 # This is required for sqlite to properly interpret numpy integers
 sqlite3.register_adapter(np.int64, lambda x: int(x))
@@ -54,7 +55,7 @@ class MetalignDB:
         # Initialize abundance matrix attribute. This ensures the abundance matrix
         # is created once and use multiple times to save time
         self._abundance_matrix = None
-        
+
         logger.info("\nChecking if file exists.")
         if self.file_path.exists():
             logger.info("Metalign txt file exists")
@@ -82,7 +83,7 @@ class MetalignDB:
                 raise Exception(f'Exiting. Check log file')
         else:
             raise FileNotFoundError (f"The file path you provided does not exist: \n{self.file_path}")
-        
+
         # class level hidden attributes. Not intended for the user
         self._GET_DATA = {
         "phylum": self.get_all_phyla,
@@ -440,7 +441,7 @@ class MetalignDB:
         metric = metric.lower()
         if self._abundance_matrix is None:
             self._make_abundance_matrix()
-        alph_diversity_metric = statistics.calc_alpha_diversity(self._abundance_matrix, metric=metric)
+        alph_diversity_metric = calc_stats.calc_alpha_diversity(self._abundance_matrix, metric=metric)
         return alph_diversity_metric
 
     def get_beta_diversity(self, metric: str = 'braycurtis') -> pd.DataFrame:
@@ -454,7 +455,7 @@ class MetalignDB:
         metric = metric.lower()
         if self._abundance_matrix is None:
             self._make_abundance_matrix()
-        beta_diversity_metric = statistics.calc_beta_diversity(self._abundance_matrix, metric)
+        beta_diversity_metric = calc_stats.calc_beta_diversity(self._abundance_matrix, metric)
         return beta_diversity_metric
 
     def get_metadata(self, 
@@ -487,6 +488,35 @@ class MetalignDB:
         self._metadata = self._metadata[COLUMNS].set_index(index_col)
         return self._metadata
 
+    def plot_species_accum(
+        self,
+        show_grids: str | list = None,
+        label_y: bool = False,
+        label_x: bool = False,
+        marker: str = "o",
+    ):
+        """
+        Make a species accumulation curve
+        Arguments:
+            show_grids (str|list): display the grids on the plot.
+                Literal['both', 'x', 'y'] = "both"
+            label_y (bool): Add y-axis label to plot
+            label_x (bool): Add x-axis label to plot
+        Returns:
+            plt.figure
+        """
+        speAbund_sobs = self.get_alpha_diversity("sobs")
+        sobs_df = (
+            pd.DataFrame(speAbund_sobs, columns=["abundance"])
+            .reset_index()
+            .sort_values(by="abundance")
+        )
+        fig = calc_stats.make_species_accumulation(
+            sobs_df.sample_id, sobs_df.abundance, show_grids, label_y, label_x, marker
+        )
+
+        return fig
+
     def plot_pcoa(
         self,
         color_by = None,
@@ -499,7 +529,7 @@ class MetalignDB:
             figure
         """
         distance_matrix = self.get_beta_diversity()
-        self._dimensions = statistics.make_pcoa_plot(distance_matrix=distance_matrix,
+        self._dimensions = calc_stats.make_pcoa_plot(distance_matrix=distance_matrix,
                                   sample_metadata=self._metadata,
                                   color_by=color_by,
                                   method=method,
@@ -525,7 +555,7 @@ class MetalignDB:
 
         dissimilarity_matrix=self.get_beta_diversity().to_data_frame()
 
-        make_UMAP = statistics.make_UMAP(dissimilarity_matrix = dissimilarity_matrix,
+        make_UMAP = calc_stats.make_UMAP(dissimilarity_matrix = dissimilarity_matrix,
                                         abundance_matrix = self._abundance_matrix,
                                         metadata=self._metadata,
                                         color_by=color_by)

@@ -1,3 +1,4 @@
+from typing import Optional
 from skbio.diversity import alpha_diversity, beta_diversity
 from skbio.stats.ordination import pcoa, OrdinationResults
 from skbio import DistanceMatrix as DistMat
@@ -5,6 +6,7 @@ from skbio import DistanceMatrix as DistMat
 # from sklearn.model_selection import train_test_split
 # from sklearn.preprocessing import StandardScaler
 # import umap.umap_ as umap
+
 
 import pandas as pd
 import numpy as np
@@ -80,29 +82,56 @@ def make_pcoa_plot(
                           hue=color_by if color_by is not None else None)
     plt.xlabel(f'PC1 ({pcoa_results.proportion_explained.iloc[0]:.2%})')
     plt.ylabel(f'PC2 ({pcoa_results.proportion_explained.iloc[1]:.2%})')
+    plt.show()    
 
     return temp_dataframe
 
+from typing import Union
 
-def make_UMAP1(
-    abundance_matrix: pd.DataFrame,
-    dissimilarity_matrix: pd.DataFrame = None,
-):
+def make_species_accumulation(sample_names: np.array,
+                              species_richness: np.array,
+                              grid: Union[str, list] = None,
+                              label_y: bool = False,
+                              label_x: bool = False,
+                              marker: str = 'o'
+                              ) -> list:
     """
-    Create a UMAP projection of microbiome data.
-    Parameters:
-        abundance_matrix (pd.DataFrame): Samples × features matrix (e.g., taxa counts or relative abundance).
-        dissimilarity_matrix (pd.DataFrame, optional): Optional precomputed distance matrix (e.g., Bray-Curtis).
+    Make species accumulation curve. It sorts the data in ascending order.
+    Arguments:
+        sample_names (np.Series): names of samples
+        species_richness (np.Series)
     Returns:
-        np.ndarray: 2D UMAP embedding coordinates.
+        list: A list of Line2D objects representing the plotted data.
     """
-    return
+    
+    fig = plt.plot(sample_names, species_richness, marker='o')
+    plt.xticks(rotation=90)
+    if label_y: plt.ylabel('Species Richness')
+    if label_x: plt.xlabel('Samples')
+    if grid is not None: plt.grid(True, axis=grid)
+    
+    return fig
+
 
 def make_UMAP(
     abundance_matrix: pd.DataFrame = None,
     dissimilarity_matrix: pd.DataFrame = None,
-    metadata: pd.DataFrame = None) -> None:
-    return
+    metadata: pd.DataFrame = None,
+) -> None:
+    """
+    Create a UMAP projection of microbiome data, optionally colored by metadata.
+    
+    Parameters:
+        abundance_matrix (pd.DataFrame, optional): Samples × features matrix.
+        dissimilarity_matrix (pd.DataFrame, optional): Precomputed dissimilarity matrix (e.g., Bray-Curtis).
+        metadata (pd.DataFrame, optional): Sample metadata with sample IDs as index.
+    Returns:
+        pd.DataFrame or Tuple[pd.DataFrame, umap.UMAP]: UMAP coordinates with metadata (if provided),
+        and optionally the UMAP reducer object.
+    """
+
+    return 
+
 
 def make_tSNE():
     
