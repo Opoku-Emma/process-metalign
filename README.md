@@ -2,7 +2,6 @@
 The goal of this project is to provide a streamlined and easy analysis of microbiome sequencing data that has been generated using metalign.
 Given that you are new to [metalign](https://github.com/nlapier2/Metalign) and how it works, you might want to check out their documentation page [here](https://github.com/nlapier2/Metalign).
 
-
 ## Getting Started & Usage
 ### src/
 contains necessary scripts to run analysis\
@@ -19,6 +18,22 @@ Contains demo data for analysis.
 - leaf_phenotype.txt
 
 ### main_analysis.py
-This runs a demo on how the script works. It reads in the metalign file and metadata file. Then it runs a simple analysis and returns a Principal Coordinate Analysis plot colored by site.
+This runs a demo on how the script works. It reads in the metalign file and metadata file.
+You only need to provide the metalign file path which provides you features like:
+- Calculating alpha and beta diversity
+- Making plots of taxonomic groups/levels
+- Pulling data on specified taxonomic groups/levels
+  
+If metadata_file is added, further functionality is added to make Principal Coordinate Plots and coloring based on specified feature
+
+Then it runs a simple analysis and returns a Principal Coordinate Analysis plot colored by site.
 
 ## Example
+    file_path = data/leaf_all.nostrain.txt
+    metadata_file = data/leaf_phenotype.csv
+    from src.metalign_analysis import MetalignDB as DB
+    db = DB(file_path)
+    db.get_metadata(metadata_file, categories=['Well', 'Sample Name','complex','cultivation'], index_col='Well')
+    alpha_diversity = db.get_alpha_diversity()
+    print(f"Alpha diversity for all samples: \n{list(alpha_diversity)}")
+    db.plot_pcoa('complex')
