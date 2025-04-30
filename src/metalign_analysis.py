@@ -494,6 +494,7 @@ class MetalignDB:
         label_y: bool = False,
         label_x: bool = False,
         marker: str = "o",
+        linestyle: str = '-',
     ):
         """
         Make a species accumulation curve
@@ -514,7 +515,7 @@ class MetalignDB:
             .sort_values(by="abundance")
         )
         fig = calc_stats.make_species_accumulation(
-            sobs_df.sample_id, sobs_df.abundance, show_grids, label_y, label_x, marker
+            sobs_df.sample_id, sobs_df.abundance, show_grids, label_y, label_x, marker,linestyle,
         )
 
         return fig

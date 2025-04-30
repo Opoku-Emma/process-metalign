@@ -93,7 +93,8 @@ def make_species_accumulation(sample_names: np.array,
                               grid: Union[str, list] = None,
                               label_y: bool = False,
                               label_x: bool = False,
-                              marker: str = 'o'
+                              marker: str = 'o',
+                              linestyle: str = '-',
                               ) -> plt.figure:
     """
     Make species accumulation curve. It sorts the data in ascending order.
@@ -104,7 +105,7 @@ def make_species_accumulation(sample_names: np.array,
         list: A list of Line2D objects representing the plotted data.
     """
     fig, ax = plt.subplots()
-    ax.plot(sample_names, species_richness, marker)
+    ax.plot(sample_names, species_richness, marker, linestyle)
     ax.set_xticklabels(sample_names, rotation=90)
     
     if label_y: ax.set_ylabel('Species Richness')
@@ -112,6 +113,10 @@ def make_species_accumulation(sample_names: np.array,
     if grid is not None: ax.grid(True, axis=grid)
     
     return fig
+
+def calc_permanova() -> None:
+    
+    return
 
 
 def make_UMAP(
