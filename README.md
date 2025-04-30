@@ -29,8 +29,8 @@ If metadata_file is added, further functionality is added to make Principal Coor
 Then it runs a simple analysis and returns a Principal Coordinate Analysis plot colored by site.
 
 ## Example
-    file_path = data/leaf_all.nostrain.txt
-    metadata_file = data/leaf_phenotype.csv
+    file_path = "data/leaf_all.nostrain.txt"
+    metadata_file = "data/leaf_phenotype.csv"
     from src.metalign_analysis import MetalignDB as DB
     db = DB(file_path)
     db.get_metadata(metadata_file, categories=['Well', 'Sample Name','complex','cultivation'], index_col='Well')
