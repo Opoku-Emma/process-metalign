@@ -2,15 +2,15 @@
 The goal of this project is to provide a streamlined and easy analysis of microbiome sequencing data that has been generated using metalign.
 Given that you are new to [metalign](https://github.com/nlapier2/Metalign) and how it works, you might want to check out their documentation page [here](https://github.com/nlapier2/Metalign).
 
-## Getting Started & Usage
+## Getting Started
 ### src/
 contains necessary scripts to run analysis\
--- src\
 -- assign_lineage_codes.py\
 -- my_decorators.py\
 -- preprocess_data.py\
 -- sql_tables.py\
--- make_rows.py
+-- make_rows.py\
+-- metalign_analysis.py
 
 ### data/
 Contains demo data for analysis.
@@ -28,12 +28,5 @@ If metadata_file is added, further functionality is added to make Principal Coor
 
 Then it runs a simple analysis and returns a Principal Coordinate Analysis plot colored by site.
 
-## Example
-    file_path = "data/leaf_all.nostrain.txt"
-    metadata_file = "data/leaf_phenotype.csv"
-    from src.metalign_analysis import MetalignDB as DB
-    db = DB(file_path)
-    db.get_metadata(metadata_file, categories=['Well', 'Sample Name','complex','cultivation'], index_col='Well')
-    alpha_diversity = db.get_alpha_diversity()
-    print(f"Alpha diversity for all samples: \n{list(alpha_diversity)}")
-    db.plot_pcoa('complex')
+## Usage
+Run notebook [analysis notebook](https://github.com/Opoku-Emma/process-metalign/blob/main/analysis_notebook.ipynb) to see how it works
