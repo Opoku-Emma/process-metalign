@@ -6,8 +6,7 @@ def main():
     db = DB(raw_data)
     metadata_file = "data/leaf_phenotype.csv"
     db.get_metadata(metadata_file, categories=['samples', 'site', 'treatment_herb_level'], sep=',', index_col='samples')
-    fig = db.plot_species_accum('y', label_y=True,)
-    # db.plot_pcoa(color_by="site", method='eigh')  
+    fig = db.plot_species_accum('y', label_y=True)
     return fig
 
 if __name__ == "__main__":

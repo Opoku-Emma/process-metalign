@@ -23,6 +23,7 @@ You only need to provide the metalign file path which provides you features like
 - Calculating alpha and beta diversity
 - Making plots of taxonomic groups/levels
 - Pulling data on specified taxonomic groups/levels
+- Making species accumulation curve
   
 If metadata_file is added, further functionality is added to make Principal Coordinate Plots and coloring based on specified feature
 
