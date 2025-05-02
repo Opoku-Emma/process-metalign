@@ -27,7 +27,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class MetalignDB:
+class baseDB:
     """General Class for processing metalign data file"""
 
     def __init__(self, file_path: str) -> None:
@@ -270,7 +270,6 @@ class MetalignDB:
         self.run_action(sql_tables.vOrder, keep_open=True, commit=True)
         self.run_action(sql_tables.vFamily, keep_open=True, commit=True)
         self.run_action(sql_tables.vGenus, commit=True)
-
         return
 
     def _read_data(self) -> pd.DataFrame:
@@ -303,6 +302,13 @@ class MetalignDB:
         self._lineages = df[df["Rank"] == "species"]
         self._lineages = self._lineages[["Lineage", "Taxon", "Sample_ID", "Relative_abundance"]]
         return self._lineages
+    
+
+class Metalign(baseDB):
+    
+    def __init__(self, file_path):
+        super().__init__(file_path)
+        return
 
     def get_all_sample_names(self) -> list:
         """
