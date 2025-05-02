@@ -317,6 +317,7 @@ class Metalign(baseDB):
             list: of all sample names
         """
         return self._all_samples
+    
     def get_all_phyla(self, sample_id: str = None) -> pd.DataFrame:
         """
         Retrieves the dataset containing the relative abundance of all phyla
@@ -327,7 +328,6 @@ class Metalign(baseDB):
         Returns:
             pd.DataFrame: Dataframe with relative abundance of phyla present
         """
-
         sql = sql_tables.get_all_phyla(sample_id)
         self._connect()
         all_phyla = pd.read_sql(sql, self._conn)
@@ -575,13 +575,6 @@ class Metalign(baseDB):
         self,
     ) -> None:
 
-        return
-
-    def delete_data(self, path: str) -> None:
-        user_input = input(f"Do you want to delete associated database: {path}")
-        user_input = user_input.lower()
-        if user_input in ["yes", "y"]:
-            os.remove(path=path)
         return
 
     def barplot_by_sample(self, sample_id, level:str, subset=12):
