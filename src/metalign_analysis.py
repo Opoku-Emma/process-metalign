@@ -320,7 +320,9 @@ class Metalign(baseDB):
         """
         return self._all_samples
     
-    def get_all_phyla(self, sample_id: str = None) -> pd.DataFrame:
+    def get_all_phyla(self, sample_id: str = None,
+                      superkingdom_id: int = None
+                      ) -> pd.DataFrame:
         """
         Retrieves the dataset containing the relative abundance of all phyla
         Arguments:
@@ -330,12 +332,12 @@ class Metalign(baseDB):
         Returns:
             pd.DataFrame: Dataframe with relative abundance of phyla present
         """
-        sql = sql_tables.get_all_phyla(sample_id)
+        sql = sql_tables.get_all_phyla(sample_id, superkingdom_id)
         self._connect()
         all_phyla = pd.read_sql(sql, self._conn)
         return all_phyla
 
-    def get_all_class(self, sample_id: str = None) -> pd.DataFrame:
+    def get_all_class(self, sample_id: str = None, superkingdom_id: int = None) -> pd.DataFrame:
         """
         Retrieves the dataset containing the relative abundance of all classes
         Arguments:
@@ -345,12 +347,12 @@ class Metalign(baseDB):
         Returns:
             pd.DataFrame: Dataframe with relative abundance of classes present
         """
-        sql = sql_tables.get_all_class(sample_id)
+        sql = sql_tables.get_all_class(sample_id, superkingdom_id)
         self._connect()
         all_classes = pd.read_sql(sql, self._conn)
         return all_classes
 
-    def get_all_order(self, sample_id: str = None) -> pd.DataFrame:
+    def get_all_order(self, sample_id: str = None,superkingdom_id: int = None) -> pd.DataFrame:
         """
         Retrieves the dataset containing the relative abundance of all orders
         Arguments:
@@ -360,12 +362,12 @@ class Metalign(baseDB):
         Returns:
             pd.DataFrame: Dataframe with relative abundance of orders present
         """
-        sql = sql_tables.get_all_order(sample_id)
+        sql = sql_tables.get_all_order(sample_id, superkingdom_id)
         self._connect()
         all_orders = pd.read_sql(sql, self._conn)
         return all_orders
 
-    def get_all_family(self, sample_id: str = None) -> pd.DataFrame:
+    def get_all_family(self, sample_id: str = None, superkingdom_id: int = None) -> pd.DataFrame:
         """
         Retrieves the dataset containing the relative abundance of all families
         Arguments:
@@ -376,12 +378,12 @@ class Metalign(baseDB):
             pd.DataFrame: Dataframe with relative abundance of family present
         """
 
-        sql = sql_tables.get_all_family(sample_id)
+        sql = sql_tables.get_all_family(sample_id, superkingdom_id)
         self._connect()
         all_family = pd.read_sql(sql, self._conn)
         return all_family
 
-    def get_all_genus(self, sample_id: str = None) -> pd.DataFrame:
+    def get_all_genus(self, sample_id: str = None, superkingdom_id: int = None) -> pd.DataFrame:
         """
         Retrieves the dataset containing the relative abundance of all genera
         Arguments:
@@ -391,7 +393,7 @@ class Metalign(baseDB):
         Returns:
             pd.DataFrame: Dataframe with relative abundance of genera present
         """
-        sql = sql_tables.get_all_genus(sample_id)
+        sql = sql_tables.get_all_genus(sample_id, superkingdom_id)
         self._connect()
         all_genus = pd.read_sql(sql, self._conn)
         return all_genus
@@ -421,7 +423,7 @@ class Metalign(baseDB):
         self._close()
         return all_species
 
-    def _make_abundance_matrix(self) -> pd.DataFrame:
+    def _make_abundance_matrix(self, superkingdom_id: int = None) -> pd.DataFrame:
         """
         This converts the dataset into an abundance matrix. We will then use it
         as input to calculate diversity metrics later on.
@@ -430,7 +432,7 @@ class Metalign(baseDB):
         Returns:
             pd.DataFrame: abundance matrix
         """
-        df = self.get_all_species()
+        df = self.get_all_species(superkingdom_id=superkingdom_id)
         self._abundance_matrix = df.pivot_table(
             index="sample_id",
             columns="species_name",
@@ -439,7 +441,7 @@ class Metalign(baseDB):
         )
         return self._abundance_matrix
 
-    def get_alpha_diversity(self, metric: str = 'shannon') -> pd.Series:
+    def get_alpha_diversity(self, metric: str = 'shannon', superkingdom_id: int = None) -> pd.Series:
         """
         Calculate the alpha diversity of each sample.
         Arguments:
@@ -451,11 +453,11 @@ class Metalign(baseDB):
         """
         metric = metric.lower()
         if self._abundance_matrix is None:
-            self._make_abundance_matrix()
+            self._make_abundance_matrix(superkingdom_id)
         alph_diversity_metric = calc_stats.calc_alpha_diversity(self._abundance_matrix, metric=metric)
         return alph_diversity_metric
 
-    def get_beta_diversity(self, metric: str = 'braycurtis') -> pd.DataFrame:
+    def get_beta_diversity(self, metric: str = 'braycurtis', superkingdom_id: int = None) -> pd.DataFrame:
         """
         Calculates the beta diversity metric of the entire samples
         Returns:
@@ -465,7 +467,7 @@ class Metalign(baseDB):
         """
         metric = metric.lower()
         if self._abundance_matrix is None:
-            self._make_abundance_matrix()
+            self._make_abundance_matrix(superkingdom_id)
         beta_diversity_metric = calc_stats.calc_beta_diversity(self._abundance_matrix, metric)
         return beta_diversity_metric
 
@@ -536,13 +538,14 @@ class Metalign(baseDB):
         color_by = None,
         method='eigh',
         number_of_dimensions=0,
+        superkingdom_id: int = None,
         ) -> pd.DataFrame:
         """
         Make a PCOA plot
         Returns:
             figure
         """
-        distance_matrix = self.get_beta_diversity()
+        distance_matrix = self.get_beta_diversity(superkingdom_id=superkingdom_id)
         self._dimensions = calc_stats.make_pcoa_plot(distance_matrix=distance_matrix,
                                   sample_metadata=self._metadata,
                                   color_by=color_by,
@@ -582,7 +585,7 @@ class Metalign(baseDB):
 
         return
 
-    def barplot_by_sample(self, sample_id, level:str, subset=12):
+    def barplot_by_sample(self, sample_id, level:str, subset=12, superkingdom_id: int = None):
         """
         Makes a barplot for a taxon in a particular sample
         Arguments:
@@ -594,7 +597,7 @@ class Metalign(baseDB):
         """
         if level not in self._GET_DATA: raise ValueError (f"Level not supported: {level}")
         _func = self._GET_DATA[level]
-        df = pd.DataFrame(_func(sample_id)[:subset])
+        df = pd.DataFrame(_func(sample_id, superkingdom_id=superkingdom_id)[:subset])
         fig = make_plot.make_barplot(df,sample_id,level)
         return
 
@@ -638,6 +641,7 @@ class Metalign(baseDB):
         color_palette: str = "tab10",
         top_n=15,
         choose_samples: list = None,
+        superkingdom_id: int = None,
     ):
         """
         Make barplot (depending on sample if specified) of a taxonomic level
@@ -653,7 +657,7 @@ class Metalign(baseDB):
             raise ValueError(f'{level} not correct')
 
         taxon_data_res = self._preprocess_for_barplot(
-            self._GET_DATA[level](), level, choose_samples
+            self._GET_DATA[level](superkingdom_id=superkingdom_id), level, choose_samples
         )
 
         make_plot.all_samples_barchart(

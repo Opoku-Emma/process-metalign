@@ -181,6 +181,7 @@ genus AS
 )
 
 SELECT 
+    superkingdom_id,
     family_id, 
     genus_id, 
     genus_name, 
@@ -203,6 +204,7 @@ family AS
 )
 
 SELECT 
+    superkingdom_id,
     order_id, 
     family_id, 
     family_name, 
@@ -224,6 +226,7 @@ vorder AS
 )
 
 SELECT 
+    superkingdom_id,
     order_id, 
     order_name, 
     class_id, 
@@ -245,6 +248,7 @@ class AS
 )
 
 SELECT 
+    superkingdom_id,
     class_id, 
     class_name, 
     phylum_id, 
@@ -261,7 +265,7 @@ CREATE VIEW vPhylum AS
 WITH 
 phylum AS
 (
-    SELECT phylum_id, phylum_name, superkingdom_id
+    SELECT phylum_id, phylum_name
     FROM tPhylum
 )
 
@@ -323,13 +327,14 @@ def get_all_species(species_name: str = None,
     return sql
 
 
-def get_all_phyla(sample_id: str = None) -> str:
+def get_all_phyla(sample_id: str = None, superkingdom_id: int = None) -> str:
     """
     Calculate the relative abundance data for all phyla in the dataset.
     If no sample_id is provided, it returns data for all phyla abundance
     specific to the sample id
     Arguments:
         sample_id (str | None): sample id
+        superkingdom_id (int): choose a superkingdom data to subset
     Returns:
         sql_statement (str): sql statement string
     """
@@ -344,11 +349,14 @@ def get_all_phyla(sample_id: str = None) -> str:
         sample_id, 
         relative_abundance
     FROM vPhylum
-    WHERE sample_id LIKE '{sample_id}%'
-    ;"""
+    WHERE sample_id LIKE '{sample_id}%'"""
+    
+    if superkingdom_id is not None:
+        sql += f"\n    AND superkingdom_id = {superkingdom_id}"
+    sql += "\n;"
     return sql
 
-def get_all_class(sample_id: str = None) -> str:
+def get_all_class(sample_id: str = None, superkingdom_id: int = None) -> str:
     """
     Sequel string to generated to retrieve data on all class levels in a sample
     Arguments:
@@ -367,11 +375,13 @@ def get_all_class(sample_id: str = None) -> str:
         sample_id, 
         relative_abundance
     FROM vClass
-    WHERE sample_id LIKE '{sample_id}%'
-    ;"""
+    WHERE sample_id LIKE '{sample_id}%'"""
+    if superkingdom_id is not None:
+        sql += f"\n    AND superkingdom_id = {superkingdom_id}"
+    sql += "\n;"
     return sql
 
-def get_all_order(sample_id: str = None) -> str:
+def get_all_order(sample_id: str = None, superkingdom_id: int = None) -> str:
     """
     Arguments:
         sample_id (str): sample id to be searched.
@@ -390,11 +400,13 @@ def get_all_order(sample_id: str = None) -> str:
         sample_id, 
         relative_abundance
     FROM vOrder
-    WHERE sample_id LIKE '{sample_id}%'
-    ;"""
+    WHERE sample_id LIKE '{sample_id}%'"""
+    if superkingdom_id is not None:
+        sql += f"\n    AND superkingdom_id = {superkingdom_id}"
+    sql += "\n;"
     return sql
 
-def get_all_family(sample_id: str = None) -> str:
+def get_all_family(sample_id: str = None, superkingdom_id: int = None) -> str:
     """
     Arguments:
         sample_id (str): 
@@ -412,11 +424,13 @@ def get_all_family(sample_id: str = None) -> str:
         sample_id, 
         relative_abundance
     FROM vFamily
-    WHERE sample_id LIKE '{sample_id}%'
-    ;"""
+    WHERE sample_id LIKE '{sample_id}%'"""
+    if superkingdom_id is not None:
+        sql += f"\n    AND superkingdom_id = {superkingdom_id}"
+    sql += "\n;"
     return sql
 
-def get_all_genus(sample_id: str = None) -> str:
+def get_all_genus(sample_id: str = None, superkingdom_id = None) -> str:
     """
     Arguments:
         sample_id (str | None): sample id
@@ -433,6 +447,8 @@ def get_all_genus(sample_id: str = None) -> str:
         sample_id, 
         relative_abundance
     FROM vGenus
-    WHERE sample_id LIKE '{sample_id}%'
-    ;"""
+    WHERE sample_id LIKE '{sample_id}%'"""
+    if superkingdom_id is not None:
+        sql += f"\n    AND superkingdom_id = {superkingdom_id}"
+    sql += "\n;"
     return sql
