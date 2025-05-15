@@ -12,6 +12,7 @@ that can be called to  communicate to the database
 
 __author__ = 'Emmanuel Opoku'
 __version__ = 1.0
+
 #######################################################
 ###################  CREATE TABLES ####################
 #######################################################
@@ -282,11 +283,15 @@ ORDER BY relative_abundance DESC
 ##############################################################################
 
 
-def get_all_species(species_name: str = None, sample_id: str = None) -> str:
+def get_all_species(species_name: str = None, 
+                    sample_id: str = None,
+                    superkingdom_id: int = None,
+                    ) -> str:
     """
     Arguments:
         species_name (str | None): name of the species to query
         sample_id (str | None): sample id else get all samples
+        superkingdom_id (int): specify to subset data in a specific superkingdom
     Returns:
         sql_statement of type `str`
     """
@@ -297,13 +302,24 @@ def get_all_species(species_name: str = None, sample_id: str = None) -> str:
         sample_id = ""
 
     sql = f"""
-    SELECT species_id, species_name, relative_abundance, tSpecies.sample_id
-    FROM tSpecies
-    JOIN tSpecies_abundance USING(species_id, sample_id)
-    WHERE tSpecies.species_name LIKE '{species_name}%' 
-    AND tSpecies.sample_id LIKE '{sample_id}%'
-    ORDER BY relative_abundance DESC
-    ;"""
+    SELECT 
+    --    superkingdom_id, 
+        species_id, 
+        species_name, 
+        relative_abundance, 
+        tSpecies.sample_id
+    FROM 
+        tSpecies
+    JOIN 
+        tSpecies_abundance USING(species_id, sample_id)
+    WHERE 
+        tSpecies.species_name LIKE '{species_name}%'
+    AND 
+        tSpecies.sample_id LIKE '{sample_id}%'
+    """
+    if superkingdom_id is not None:
+        sql += f"\n    AND tSpecies_abundance.superkingdom_id = {superkingdom_id}\n"
+    sql += "    ORDER BY \n        relative_abundance DESC\n    ;"
     return sql
 
 

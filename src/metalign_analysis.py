@@ -398,7 +398,8 @@ class Metalign(baseDB):
 
     def get_all_species(self, 
                         name: str = None, 
-                        sample_id: str = None
+                        sample_id: str = None,
+                        superkingdom_id: int = None,
                         ) -> pd.DataFrame:
         """
         Retrieves the dataset containing the relative abundance of all species
@@ -408,11 +409,13 @@ class Metalign(baseDB):
                 samples will be returned
             name (str): if provided, the result only shows species 
                 with name similar to that,
+            superkingdom_id (int): if provided, the result only shows species
+                with superkingdom_id similar to that. [2: bacteria, 10239: Viruses, ]                
         Returns:
             pd.DataFrame: with relative abundance of species present
         """
 
-        sql = sql_tables.get_all_species(name, sample_id)
+        sql = sql_tables.get_all_species(name, sample_id, superkingdom_id)
         self._connect()
         all_species = pd.read_sql(sql, self._conn)
         self._close()
