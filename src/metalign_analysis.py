@@ -236,6 +236,8 @@ class baseDB:
             species_rows_to_insert.append(row_info['species'])
             # Get data for the species abundance in each sample
             species_and_sample_id = row_info["species"][:2]
+            # Add superkingdom_id to the list
+            species_and_sample_id.insert(0, row_info['kingdom'][0])
             species_and_sample_id.append(row["Relative_abundance"])
             species_abundance.append(species_and_sample_id)
 
@@ -395,8 +397,8 @@ class Metalign(baseDB):
         return all_genus
 
     def get_all_species(self, 
-                        name: str | None = None, 
-                        sample_id: str | None = None
+                        name: str = None, 
+                        sample_id: str = None
                         ) -> pd.DataFrame:
         """
         Retrieves the dataset containing the relative abundance of all species

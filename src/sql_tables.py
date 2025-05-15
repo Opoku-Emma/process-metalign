@@ -80,10 +80,11 @@ def create_tPhylum():
 def create_species_abundance():
     sql = """
     CREATE TABLE tSpecies_abundance (
-    species_id INTEGER, 
-    sample_id INTEGER, 
-    relative_abundance DECIMAL(10, 5),
-    PRIMARY KEY (species_id, sample_id)
+        superkingdom_id INTEGER,
+        species_id INTEGER, 
+        sample_id INTEGER, 
+        relative_abundance DECIMAL(10, 5),
+        PRIMARY KEY (species_id, sample_id)
     )
     ;"""
     
@@ -153,8 +154,8 @@ def fill_phylum():
 
 def species_abundance_sql():
     sql = """
-    INSERT INTO tSpecies_abundance (species_id, sample_id, relative_abundance)
-    VALUES (?,?,?)
+    INSERT INTO tSpecies_abundance (superkingdom_id, species_id, sample_id, relative_abundance)
+    VALUES (?,?,?,?)
     ;"""
     return sql
 
