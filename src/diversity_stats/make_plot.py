@@ -112,3 +112,26 @@ def make_barplot(data: pd.DataFrame, sample_id: str, level: str) -> None:
     plt.show()
     
     return
+
+def rank_abundance_plot(
+    data: pd.DataFrame,
+    sample_id: str,
+    level: str = 'species') -> plt.figure:
+    """
+    Make a rank abundance plot for a specific sample
+    Arguments:
+        data (pd.DataFrame): Dataframe containing the data for the chosen sample_id.
+        sample_id (str): The sample_id selected. This also shows as the title of the plot.
+        level (str): Taxonomic level to be plotted. Default is 'species'.
+    Returns:
+        plt.figure: Plotting figure.
+    """
+    
+    # Melt data
+    data_melted = data.melt(var_name=level, value_name='relative_abundance')
+    data_melted.set_index(level, inplace=True)
+    data_melted.sort(values='relative_abundance', ascending=False, inplace=True)
+    ax, fig = plt.subplots(1, 1, figsize=(14, 8))
+    ax.plot(data_melted.index, data_melted['relative_abundance'])    
+    
+    return 

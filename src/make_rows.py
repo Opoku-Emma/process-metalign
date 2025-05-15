@@ -34,7 +34,7 @@ def make_row_dict(lineage: str, taxon: str, sample_id: str) -> dict:
     rows_dict = {}
     sample_id = get_sample_name(sample_id)[0] # Substring of the sample id. This is just enough for them to be unique
 
-    kingdom_id, kingdom_name =   preprocess_data.get_kingdom(lineage, taxon)
+    superkingdom_id, superkingdom_name =   preprocess_data.get_kingdom(lineage, taxon)
     phylum_id, phylum_name  =    preprocess_data.get_phylum(lineage, taxon)
     Class_id, class_name    =    preprocess_data.get_class(lineage, taxon)
     order_id, order_name    =    preprocess_data.get_order(lineage, taxon)
@@ -42,8 +42,8 @@ def make_row_dict(lineage: str, taxon: str, sample_id: str) -> dict:
     genus_id, genus_name    =    preprocess_data.get_genus(lineage, taxon)
     species_id, species_name =   preprocess_data.get_species(lineage, taxon)
 
-    rows_dict['kingdom'] = [kingdom_id, kingdom_name]
-    rows_dict['phylum'] = [phylum_id, kingdom_id, phylum_name]
+    rows_dict['kingdom'] = [superkingdom_id, superkingdom_name]
+    rows_dict['phylum'] = [phylum_id, superkingdom_id, phylum_name]
     rows_dict['class'] = [Class_id, phylum_id, class_name]
     rows_dict['order'] = [order_id, Class_id, order_name]
     rows_dict['family'] = [family_id, order_id, family_name]
