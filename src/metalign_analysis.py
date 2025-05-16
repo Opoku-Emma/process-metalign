@@ -423,7 +423,7 @@ class Metalign(baseDB):
         self._close()
         return all_species
 
-    def _make_abundance_matrix(self, superkingdom_id: int = None) -> pd.DataFrame:
+    def _make_abundance_matrix(self, superkingdom_id: int) -> pd.DataFrame:
         """
         This converts the dataset into an abundance matrix. We will then use it
         as input to calculate diversity metrics later on.
@@ -460,14 +460,23 @@ class Metalign(baseDB):
     def get_beta_diversity(self, metric: str = 'braycurtis', superkingdom_id: int = None) -> pd.DataFrame:
         """
         Calculates the beta diversity metric of the entire samples
+        Arguments:
+            metric (str): dissimilarity metric. [braycurtis, jaccard, ]
+            superkingdom_id (int): optional superkingdom 
         Returns:
             DistanceMatrix: dataframe-like object. 
                 You can call `beta_diversity_metric.to_data_frame()` 
                 to convert it to a `pd.DataFrame` object
         """
         metric = metric.lower()
-        if self._abundance_matrix is None:
+        # Use an instance attribute to track the last used superkingdom_id
+        if not hasattr(self, '_last_superkingdom_id'):
+            self._last_superkingdom_id = None
+        if (self._abundance_matrix is None) or (self._last_superkingdom_id != superkingdom_id):
             self._make_abundance_matrix(superkingdom_id)
+            self._last_superkingdom_id = superkingdom_id
+        if self._abundance_matrix.empty:
+            raise ValueError(f'Individuals in superkingdom {superkingdom_id} not found')
         beta_diversity_metric = calc_stats.calc_beta_diversity(self._abundance_matrix, metric)
         return beta_diversity_metric
 
