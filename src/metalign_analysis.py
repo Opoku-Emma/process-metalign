@@ -544,17 +544,18 @@ class Metalign(baseDB):
 
     def plot_pcoa(
         self,
+        dissimilarity_metric: str = 'braycurtis',
         color_by = None,
+        superkingdom_id: int = None,
         method='eigh',
         number_of_dimensions=0,
-        superkingdom_id: int = None,
         ) -> pd.DataFrame:
         """
         Make a PCOA plot
         Returns:
             figure
         """
-        distance_matrix = self.get_beta_diversity(superkingdom_id=superkingdom_id)
+        distance_matrix = self.get_beta_diversity(dissimilarity_metric, superkingdom_id)
         self._dimensions = calc_stats.make_pcoa_plot(distance_matrix=distance_matrix,
                                   sample_metadata=self._metadata,
                                   color_by=color_by,
@@ -575,16 +576,20 @@ class Metalign(baseDB):
         return
 
     def plot_UMAP(self,
-                  dissimilarity_matrix: True = None,
-                  color_by: str = None
+                  superkingdom_id: int = None,
+                  color_by: str = None,
+                  metric: str = 'braycurtis'
                   ) -> None:
-
-        dissimilarity_matrix=self.get_beta_diversity().to_data_frame()
+        """
+        If dissimilarity_matrix if True, it will be used instead of an abundance_matrix
+        """
+        dissimilarity_matrix = self.get_beta_diversity(metric, superkingdom_id).to_data_frame()
 
         make_UMAP = calc_stats.make_UMAP(dissimilarity_matrix = dissimilarity_matrix,
                                         abundance_matrix = self._abundance_matrix,
                                         metadata=self._metadata,
-                                        color_by=color_by)
+                                        #color_by=color_by
+                                        )
 
         return make_UMAP
 

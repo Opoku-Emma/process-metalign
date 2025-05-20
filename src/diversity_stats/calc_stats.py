@@ -5,7 +5,7 @@ from skbio import DistanceMatrix as DistMat
 
 # from sklearn.model_selection import train_test_split
 # from sklearn.preprocessing import StandardScaler
-# import umap.umap_ as umap
+import umap.umap_ as umap #type: ignore
 
 
 import pandas as pd
@@ -123,20 +123,59 @@ def make_UMAP(
     abundance_matrix: pd.DataFrame = None,
     dissimilarity_matrix: pd.DataFrame = None,
     metadata: pd.DataFrame = None,
-) -> None:
+    n_neighbors: int = 15,
+    min_dist: float = 0.1,
+    metric: str = "euclidean",
+    random_state: int = 42,
+    return_reducer: bool = False,
+):
     """
     Create a UMAP projection of microbiome data, optionally colored by metadata.
-    
+
     Parameters:
         abundance_matrix (pd.DataFrame, optional): Samples × features matrix.
         dissimilarity_matrix (pd.DataFrame, optional): Precomputed dissimilarity matrix (e.g., Bray-Curtis).
         metadata (pd.DataFrame, optional): Sample metadata with sample IDs as index.
+        n_neighbors (int): UMAP n_neighbors parameter.
+        min_dist (float): UMAP min_dist parameter.
+        metric (str): Distance metric for UMAP if abundance_matrix is used.
+        random_state (int): Random seed for reproducibility.
+        return_reducer (bool): If True, also return the UMAP reducer object.
     Returns:
         pd.DataFrame or Tuple[pd.DataFrame, umap.UMAP]: UMAP coordinates with metadata (if provided),
         and optionally the UMAP reducer object.
     """
 
-    return 
+    if (abundance_matrix is None) and (dissimilarity_matrix is False):
+        raise ValueError("Either abundance_matrix or dissimilarity_matrix must be provided.")
+
+    if not dissimilarity_matrix.empty:
+        reducer = umap.UMAP(
+            n_neighbors=n_neighbors,
+            min_dist=min_dist,
+            metric="precomputed",
+            random_state=random_state
+        )
+        embedding = reducer.fit_transform(dissimilarity_matrix)
+        index = dissimilarity_matrix.index
+    else:
+        reducer = umap.UMAP(
+            n_neighbors=n_neighbors,
+            min_dist=min_dist,
+            metric=metric,
+            random_state=random_state
+        )
+        embedding = reducer.fit_transform(abundance_matrix)
+        index = abundance_matrix.index
+
+    umap_df = pd.DataFrame(embedding, columns=["UMAP1", "UMAP2"], index=index)
+
+    if metadata is not None:
+        umap_df = umap_df.join(metadata, how="left")
+
+    if return_reducer:
+        return umap_df, reducer
+    return umap_df
 
 
 def make_tSNE():
