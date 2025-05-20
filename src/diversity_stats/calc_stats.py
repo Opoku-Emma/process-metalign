@@ -120,13 +120,14 @@ def calc_permanova() -> None:
 
 
 def make_UMAP(
-    abundance_matrix: pd.DataFrame = None,
-    dissimilarity_matrix: pd.DataFrame = None,
+    use_dissimilarity: bool,
+    abundance_matrix: pd.DataFrame,
+    dissimilarity_matrix: pd.DataFrame,
+    n_neighbors: int,
+    min_dist: float,
+    metric: str,
+    random_state: int,
     metadata: pd.DataFrame = None,
-    n_neighbors: int = 15,
-    min_dist: float = 0.1,
-    metric: str = "euclidean",
-    random_state: int = 42,
     return_reducer: bool = False,
 ):
     """
@@ -149,7 +150,7 @@ def make_UMAP(
     if (abundance_matrix is None) and (dissimilarity_matrix is False):
         raise ValueError("Either abundance_matrix or dissimilarity_matrix must be provided.")
 
-    if not dissimilarity_matrix.empty:
+    if use_dissimilarity:
         reducer = umap.UMAP(
             n_neighbors=n_neighbors,
             min_dist=min_dist,
