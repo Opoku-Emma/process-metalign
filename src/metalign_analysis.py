@@ -578,29 +578,25 @@ class Metalign(baseDB):
     def plot_UMAP(self,
                   superkingdom_id: int = None,
                   color_by: str = None,
-                  use_dissimilarity: bool = False,
                   random_state: int = 42,
                   n_neighbors: int = 10,
-                  min_dist: float = 0.2,
-                  metric: str = 'braycurtis'
+                  min_dist: float = 0.1,
+                  metric: str = 'euclidean',
+                  n_components: int = 2
                   ) -> None:
         """
         If dissimilarity_matrix if True, it will be used instead of an abundance_matrix
         """
         
-        if use_dissimilarity:
-            dissimilarity_matrix = self.get_beta_diversity(metric, superkingdom_id).to_data_frame()
-        else:
-            dissimilarity_matrix = None
+        abundance_matrix = self._make_abundance_matrix(superkingdom_id)
 
         make_UMAP = calc_stats.make_UMAP(
-                                        use_dissimilarity=use_dissimilarity,
-                                        abundance_matrix = self._abundance_matrix,
-                                        dissimilarity_matrix = dissimilarity_matrix,
-                                        metadata=self._metadata,
+                                        abundance_matrix = abundance_matrix,
                                         n_neighbors=n_neighbors,
                                         min_dist=min_dist,
-                                        metric=metric ,                                       
+                                        metric=metric,                                       
+                                        n_components=n_components,
+                                        metadata=self._metadata,
                                         random_state=random_state,
                                         #color_by=color_by
                                         )

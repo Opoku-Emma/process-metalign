@@ -5,7 +5,7 @@ from skbio import DistanceMatrix as DistMat
 
 # from sklearn.model_selection import train_test_split
 # from sklearn.preprocessing import StandardScaler
-import umap.umap_ as umap #type: ignore
+import umap #type: ignore
 
 
 import pandas as pd
@@ -120,56 +120,41 @@ def calc_permanova() -> None:
 
 
 def make_UMAP(
-    use_dissimilarity: bool,
     abundance_matrix: pd.DataFrame,
-    dissimilarity_matrix: pd.DataFrame,
     n_neighbors: int,
     min_dist: float,
-    metric: str,
+    metadata: pd.DataFrame,
+    n_components: int,
     random_state: int,
-    metadata: pd.DataFrame = None,
+    metric: str,
     return_reducer: bool = False,
 ):
     """
     Create a UMAP projection of microbiome data, optionally colored by metadata.
-
     Parameters:
-        abundance_matrix (pd.DataFrame, optional): Samples × features matrix.
-        dissimilarity_matrix (pd.DataFrame, optional): Precomputed dissimilarity matrix (e.g., Bray-Curtis).
+        abundance_matrix (pd.DataFrame): Samples × features matrix.
         metadata (pd.DataFrame, optional): Sample metadata with sample IDs as index.
         n_neighbors (int): UMAP n_neighbors parameter.
         min_dist (float): UMAP min_dist parameter.
         metric (str): Distance metric for UMAP if abundance_matrix is used.
+        n_components (int): Number of UMAP dimensions.
         random_state (int): Random seed for reproducibility.
         return_reducer (bool): If True, also return the UMAP reducer object.
     Returns:
         pd.DataFrame or Tuple[pd.DataFrame, umap.UMAP]: UMAP coordinates with metadata (if provided),
         and optionally the UMAP reducer object.
     """
+    reducer = umap.UMAP(
+        n_neighbors=n_neighbors,
+        min_dist=min_dist,
+        metric=metric,
+        n_components=n_components,
+        random_state=random_state
+    )
+    embedding = reducer.fit_transform(abundance_matrix)
+    index = abundance_matrix.index
 
-    if (abundance_matrix is None) and (dissimilarity_matrix is False):
-        raise ValueError("Either abundance_matrix or dissimilarity_matrix must be provided.")
-
-    if use_dissimilarity:
-        reducer = umap.UMAP(
-            n_neighbors=n_neighbors,
-            min_dist=min_dist,
-            metric="precomputed",
-            random_state=random_state
-        )
-        embedding = reducer.fit_transform(dissimilarity_matrix)
-        index = dissimilarity_matrix.index
-    else:
-        reducer = umap.UMAP(
-            n_neighbors=n_neighbors,
-            min_dist=min_dist,
-            metric=metric,
-            random_state=random_state
-        )
-        embedding = reducer.fit_transform(abundance_matrix)
-        index = abundance_matrix.index
-
-    umap_df = pd.DataFrame(embedding, columns=["UMAP1", "UMAP2"], index=index)
+    umap_df = pd.DataFrame(embedding, columns=[f"UMAP{i+1}" for i in range(embedding.shape[1])], index=index)
 
     if metadata is not None:
         umap_df = umap_df.join(metadata, how="left")
